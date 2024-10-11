@@ -10,11 +10,12 @@
     "strict": true,
     "target": "ESNext",
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "typeRoots": [
       "./src/types"
     ],
     "rootDir": "src",
+    "experimentalDecorators": true
   },
   "compileOnSave": true,
   "include": [
@@ -27,4 +28,7 @@
   "ts-node": {
     "files": true
   },
+  "lib": [
+    "ESNext"
+  ],
 }

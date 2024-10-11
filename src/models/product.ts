@@ -1,87 +1,63 @@
-import { Schema, model } from 'mongoose';
-import { maxlength, maxlengthImage, optionsModel, urlImageDefaultProfile, validateMaxLength, validateMaxLengthImage } from '../constants';
-// import { findOneUserAdmin } from "../repositories/userAdmin";
-import { Product } from "../interfaces/product";
-import { ModelDefinition } from '../types';
-// validateMaxLength variables const de la carpeta const 
+import {
+  Model,
+  DataTypes,
+  InferAttributes,
+  CreationOptional,
+  InferCreationAttributes
+} from '@sequelize/core';
+import { Attribute, PrimaryKey, AutoIncrement, Default } from '@sequelize/core/decorators-legacy';
+import { Len, Max, Min } from '@sequelize/validator.js';
+import { Product } from '../interfaces/product';
+import { maxDiscount, maxPrice, maxStock, minDiscount, minLikes, minPrice, minStock, stringLargeLength, stringLength } from '../constants/constats';
 
-type ProductModelInterface = Omit<Product, "id">;
+class ProductModel extends Model<InferAttributes<ProductModel>, InferCreationAttributes<ProductModel>> implements Product {
+  @Attribute(DataTypes.INTEGER)
+  @PrimaryKey
+  @AutoIncrement
+  declare id: CreationOptional<number>;
 
-const definition: ModelDefinition<ProductModelInterface> = {
-  name: {
-    type: String,
-    required: [true, "El nombre de la empresa es obligatorio."],
-    maxlength,
-    validate: validateMaxLength
-  },
-  price: {
-    type: Number,
-    validate: {
-      validator: (value: number) => value >= 0 && value <= 1000000,
-      message: "El precio esta fuera de rango."
-    }
-  },
-  description: {
-    type: String,
-    maxlength,
-    validate: validateMaxLength
-  },
-  image: {
-    type: String,
-    maxlength: maxlengthImage,
-    default: urlImageDefaultProfile,
-    validate: validateMaxLengthImage
-  },
-  // Relacion de modelo categoria
-  category: {
-    type: Schema.Types.ObjectId,
-    ref: 'Category',
-  },
-  stock: {
-    type: Number,
-    validate: {
-      validator: (value: number) => value >= 0 && value <= 1000000,
-      message: "El descuento esta fuera de rango."
-    }
-  },
-  likes: {
-    type: Number,
-    validate: {
-      validator: (value: number) => value >= 0 && value <= 1000000,
-      message: "El descuento esta fuera de rango."
-    }
-  },
-  discount: {
-    type: Number,
-    validate: {
-      validator: (value: number) => value >= 0 && value <= 100,
-      message: "El descuento esta fuera de rango."
-    }
-  },
-  discountedPrice: {
-    type: Number,
-    validate: {
-      validator: (value: number) => value >= 0 && value <= 1000000,
-      message: "El descuento del precio esta fuera de rango."
-    }
-  }
-};
+  @Attribute(DataTypes.STRING)
+  @Len(stringLength)
+  declare name: string;
 
-export const schema = new Schema<Product>(
-  definition,
-  optionsModel
-);
+  @Attribute(DataTypes.STRING)
+  @Len(stringLargeLength)
+  declare description: string;
 
-// schema.pre<UserAdmin>("save", async function (next) {
-//   const { name, id } = this;
+  @Attribute(DataTypes.STRING)
+  @Len(stringLength)
+  declare image: string;
 
-//   const otherModelSameName = await findOneUserAdmin({ name });
+  @Attribute(DataTypes.DECIMAL(15, 2))
+  @Max(maxPrice)
+  @Min(minPrice)
+  declare price: number;
 
-//   if (otherModelSameName && otherModelSameName?.id !== id) {
-//     throw "Ya existe un administrador con el mismo nombre.";
-//   }
+  @Attribute(DataTypes.INTEGER)
+  @Max(maxStock)
+  @Min(minStock)
+  declare stock: number;
 
-//   next();
-// });
+  @Attribute(DataTypes.INTEGER)
+  @Min(minLikes)
+  declare likes: number;
 
-export default model<Product>("Product", schema);
+  @Attribute(DataTypes.INTEGER)
+  @Max(maxDiscount)
+  @Min(minDiscount)
+  declare discount: number;
+
+  @Attribute(DataTypes.DECIMAL(15, 2))
+  @Max(maxPrice)
+  @Min(minPrice)
+  declare discountedPrice: number;
+
+  @Attribute(DataTypes.BOOLEAN)
+  @Default(true)
+  declare active: boolean;
+
+  @Attribute(DataTypes.INTEGER)
+  declare category: number;
+}
+
+export default ProductModel;

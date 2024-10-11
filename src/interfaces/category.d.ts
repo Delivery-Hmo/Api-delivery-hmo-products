@@ -1,5 +1,5 @@
 export interface Category {
-  readonly id: string;
+  readonly id: number;
   name: string;
   description: string;
   image: string;
